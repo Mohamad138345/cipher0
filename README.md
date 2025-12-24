@@ -2,7 +2,7 @@
 
 Offline-first TUI password manager with TOTP support. Built with Go.
 
-https://github.com/user-attachments/assets/f259154d-0620-4eb6-838f-e746ff1733be
+https://github.com/user-attachments/assets/a0f3b2b8-fbe8-421f-b72b-7c7b93ba103f
 
 ## Features
 
