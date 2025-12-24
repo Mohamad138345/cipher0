@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/a0f3b2b8-fbe8-421f-b72b-7c7b93ba103f
 ## Install
 
 ```bash
-git clone https://github.com/2die4cheesecake/cipher0.git
+git clone https://github.com/batterdaysahead/cipher0.git
 cd cipher0
 make build
 ```
