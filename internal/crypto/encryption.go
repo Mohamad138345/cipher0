@@ -88,6 +88,65 @@ func Decrypt(ciphertext, key []byte) ([]byte, error) {
 	return plaintext, nil
 }
 
+// EncryptWithAAD encrypts with additional authenticated data.
+// AAD is authenticated but not encrypted; must match during decryption.
+func EncryptWithAAD(plaintext, key, aad []byte) ([]byte, error) {
+	if len(key) != KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create cipher: %w", err)
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GCM: %w", err)
+	}
+
+	nonce := make([]byte, NonceSize)
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return nil, fmt.Errorf("failed to generate nonce: %w", err)
+	}
+
+	// Seal with AAD - the AAD is authenticated but not encrypted
+	ciphertext := gcm.Seal(nonce, nonce, plaintext, aad)
+	return ciphertext, nil
+}
+
+// DecryptWithAAD decrypts and verifies AAD matches.
+func DecryptWithAAD(ciphertext, key, aad []byte) ([]byte, error) {
+	if len(key) != KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(ciphertext) < NonceSize+16 {
+		return nil, ErrInvalidCiphertext
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create cipher: %w", err)
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GCM: %w", err)
+	}
+
+	nonce := ciphertext[:NonceSize]
+	encryptedData := ciphertext[NonceSize:]
+
+	// Open with AAD - will fail if AAD doesn't match
+	plaintext, err := gcm.Open(nil, nonce, encryptedData, aad)
+	if err != nil {
+		return nil, ErrDecryptionFailed
+	}
+
+	return plaintext, nil
+}
+
 // ZeroMemory securely zeroes a byte slice to prevent sensitive data
 // from remaining in memory.
 func ZeroMemory(data []byte) {

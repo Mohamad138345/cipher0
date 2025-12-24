@@ -53,32 +53,38 @@ func Create(path, password string) (*Vault, string, error) {
 		Entries: make(EntryList, 0),
 	}
 
-	dataJSON, err := json.Marshal(data)
-	if err != nil {
-		return nil, "", err
-	}
-
 	mek, err := bundle.DecryptMEKWithPassword(password)
 	if err != nil {
 		return nil, "", err
 	}
 
-	encryptedData, err := crypto.Encrypt(dataJSON, mek)
-	if err != nil {
-		crypto.ZeroMemory(mek)
-		return nil, "", err
-	}
-
+	// Build DB first so BuildAAD() is available
 	keyringFingerprint := crypto.GetKeyringFingerprint()
 	db := NewDatabase(
 		bundle.SaltPassword,
 		bundle.SaltPhrase,
 		bundle.EncryptedMEKPassword,
 		bundle.EncryptedMEKPhrase,
-		encryptedData,
+		nil, // encrypted data will be set below
 		SecurityModePasswordKeyring,
 		keyringFingerprint,
 	)
+
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		crypto.ZeroMemory(mek)
+		return nil, "", err
+	}
+
+	// Encrypt with AAD
+	aad := db.BuildAAD()
+	encryptedData, err := crypto.EncryptWithAAD(dataJSON, mek, aad)
+	if err != nil {
+		crypto.ZeroMemory(mek)
+		return nil, "", err
+	}
+
+	db.SetEncryptedData(encryptedData)
 
 	if err := SaveDatabase(db, path); err != nil {
 		crypto.ZeroMemory(mek)
@@ -199,15 +205,22 @@ func UnlockWithPhrase(path, phrase string) (*Vault, error) {
 }
 
 // decryptVaultData decrypts the vault data using the MEK.
+// Tries AAD-authenticated decryption first, falls back to legacy for migration.
 func decryptVaultData(db *Database, mek []byte) (*VaultData, error) {
 	encData, err := db.GetEncryptedData()
 	if err != nil {
 		return nil, err
 	}
 
-	dataJSON, err := crypto.Decrypt(encData, mek)
+	// Try AAD-authenticated decryption first
+	aad := db.BuildAAD()
+	dataJSON, err := crypto.DecryptWithAAD(encData, mek, aad)
 	if err != nil {
-		return nil, err
+		// Fall back to legacy decryption for vaults created before AAD
+		dataJSON, err = crypto.Decrypt(encData, mek)
+		if err != nil {
+			return nil, err
+		}
 	}
 	defer crypto.ZeroMemory(dataJSON)
 
@@ -238,7 +251,9 @@ func (v *Vault) saveLocked() error {
 	}
 	defer crypto.ZeroMemory(dataJSON)
 
-	encData, err := crypto.Encrypt(dataJSON, v.mek)
+	// Encrypt with AAD to bind data to header metadata
+	aad := v.db.BuildAAD()
+	encData, err := crypto.EncryptWithAAD(dataJSON, v.mek, aad)
 	if err != nil {
 		return err
 	}

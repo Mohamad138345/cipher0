@@ -102,6 +102,29 @@ func CurrentKDFConfig() *KDFConfig {
 	}
 }
 
+// aadHeader defines fields for canonical AAD serialization.
+type aadHeader struct {
+	Version      string     `json:"version"`
+	SecurityMode string     `json:"security_mode"`
+	KDF          *KDFConfig `json:"kdf"`
+	SaltPassword string     `json:"salt_password"`
+	SaltPhrase   string     `json:"salt_phrase"`
+}
+
+// BuildAAD returns canonical header bytes for AAD.
+// Tampering with any header field will cause decryption to fail.
+func (db *Database) BuildAAD() []byte {
+	header := aadHeader{
+		Version:      db.Version,
+		SecurityMode: db.SecurityMode,
+		KDF:          db.KDF,
+		SaltPassword: db.SaltPassword,
+		SaltPhrase:   db.SaltPhrase,
+	}
+	data, _ := json.Marshal(header)
+	return data
+}
+
 // GetSaltPassword returns the decoded salt for password derivation.
 func (db *Database) GetSaltPassword() ([]byte, error) {
 	return hex.DecodeString(db.SaltPassword)

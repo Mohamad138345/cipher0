@@ -6,6 +6,8 @@
 
 **Key derivation:** Argon2id (5 iterations, 256MB, 4 threads) → 32-byte key. Salt is 32 random bytes per vault.
 
+**Header authentication:** Headers (version, KDF params, salts) are included as AAD. Editing any unencrypted field breaks decryption.
+
 ## Keyring Protection
 
 Your password alone doesn't unlock the vault. We combine it with a 32-byte random secret stored in the OS keyring (macOS Keychain / Linux Secret Service).

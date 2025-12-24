@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/2die4cheesecake/cipher0/internal/crypto"
 )
 
 var (
@@ -51,13 +53,29 @@ func (v *Vault) ExportEncryptedBackup(backupPath string) error {
 	// This ensures backups can ONLY be restored with the recovery phrase
 	backupDB := &Database{
 		Version:              v.db.Version,
+		SecurityMode:         v.db.SecurityMode,
+		KDF:                  v.db.KDF,
 		SaltPassword:         "", // Clear - no password unlock for backups
 		SaltPhrase:           v.db.SaltPhrase,
 		EncryptedMEKPassword: "", // Clear - no password unlock for backups
 		EncryptedMEKPhrase:   v.db.EncryptedMEKPhrase,
-		EncryptedData:        v.db.EncryptedData,
+		EncryptedData:        "", // Will be set below with new AAD
 		LastBackup:           v.db.LastBackup,
 	}
+
+	// Re-encrypt with backup's AAD (headers changed)
+	dataJSON, err := json.Marshal(v.data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal data: %w", err)
+	}
+	defer crypto.ZeroMemory(dataJSON)
+
+	aad := backupDB.BuildAAD()
+	encData, err := crypto.EncryptWithAAD(dataJSON, v.mek, aad)
+	if err != nil {
+		return fmt.Errorf("failed to encrypt data: %w", err)
+	}
+	backupDB.SetEncryptedData(encData)
 
 	// Save backup database
 	if err := SaveDatabase(backupDB, backupPath); err != nil {
