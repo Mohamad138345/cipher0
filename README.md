@@ -54,11 +54,9 @@ cipher0 config get vault             # show vault path
 See [SECURITY.md](SECURITY.md) for details.
 
 - Vault encrypted with AES-256-GCM using random MEK
-- Password + keyring secret derives the key (stolen files can't be brute-forced)
-- Argon2id limits attempts to ~340k/day (~250ms each)
+- Password + keyring secret derives the key
 - Backups require recovery phrase, not password
 - Sensitive data zeroed from memory
-- Files created with 0600 permissions
 
 ## Config
 
