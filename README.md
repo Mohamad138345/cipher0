@@ -62,7 +62,7 @@ See [SECURITY.md](SECURITY.md) for details.
 
 ## Config
 
-- macOS/Linux: `~/.config/cipher0/config.json`
+macOS/Linux: `~/.config/cipher0/config.json`
 
 ## Dev
 
