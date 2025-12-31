@@ -56,8 +56,3 @@ func (s *SecureMEK) IsDestroyed() bool {
 func SafeExit() {
 	memguard.SafeExit(0)
 }
-
-// SafePanic wipes memory and panics.
-func SafePanic(v interface{}) {
-	memguard.SafePanic(v)
-}
