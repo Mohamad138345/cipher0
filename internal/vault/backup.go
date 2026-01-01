@@ -73,7 +73,7 @@ func (v *Vault) ExportEncryptedBackup(backupPath string) error {
 	aad := backupDB.BuildAAD()
 	mekBytes, mekCleanup, err := v.mek.Bytes()
 	if err != nil {
-		return fmt.Errorf("failed to access MEK: %w", err)
+		return err
 	}
 	defer mekCleanup()
 	encData, err := crypto.EncryptWithAAD(dataJSON, mekBytes, aad)
